@@ -1,0 +1,23 @@
+{
+  "name": "screeps-ai",
+  "version": "1.0.0",
+  "description": "An cooperative AI for screeps.com",
+  "main": "deploy.js",
+  "scripts": {
+    "start": "nodemon",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KevinBusse/screeps-ai.git"
+  },
+  "keywords": [
+    "screeps",
+    "ai"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/KevinBusse/screeps-ai/issues"
+  },
+  "homepage": "https://github.com/KevinBusse/screeps-ai#readme"
+}
