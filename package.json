@@ -5,7 +5,7 @@
   "main": "deploy.js",
   "scripts": {
     "start": "nodemon",
-    "test": "standard"
+    "test": "eslint lib/**/*.js src/**/*.js"
   },
   "repository": {
     "type": "git",
