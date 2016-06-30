@@ -10,17 +10,23 @@ try {
   process.exit(1);
 }
 
+/** @var {string} config.email */
 if (typeof config.email !== 'string' || config.email.length === 0) {
   console.log('Email is missing');
   process.exit(1);
 }
 
+/** @var {string} config.password */
 if (typeof config.password !== 'string' || config.password.length === 0) {
   console.log('Password is missing');
   process.exit(1);
 }
 
-var branch = config.branch || 'default';
+/** @var {string} config.branch */
+var branch = 'default';
+if (typeof config.branch === 'string' && config.branch.length !== 0) {
+  branch = config.branch;
+}
 
 console.log(`Deploying to branch "${branch}"`);
 

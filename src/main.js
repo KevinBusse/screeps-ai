@@ -9,16 +9,16 @@ function spawn(role, count) {
   }
 
   if (role === 'claimer') {
-    Game.spawns.Hearth.createCreep([CLAIM, MOVE], undefined, {role: role});
+    Game.spawns.Hearth.createCreep([CLAIM, MOVE], '', {role: role});
     return;
   }
 
   if (Game.spawns.Hearth.canCreateCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE]) === OK) {
-    Game.spawns.Hearth.createCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE], undefined, {role: role});
+    Game.spawns.Hearth.createCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE], '', {role: role});
     return;
   }
 
-  Game.spawns.Hearth.createCreep([WORK, CARRY, MOVE], undefined, {role: role});
+  Game.spawns.Hearth.createCreep([WORK, CARRY, MOVE], '', {role: role});
 }
 
 exports.loop = function () {
