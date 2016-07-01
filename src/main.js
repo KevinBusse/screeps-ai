@@ -2,49 +2,49 @@ var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
 
+var creepKeeper = require('creepKeeper');
+var structureKeeper = require('structureKeeper');
+var stats = require('roomStats');
+
 function spawn(role, count) {
   var existingRoles = _.filter(Game.creeps, (creep) => creep.memory.role === role);
+  var primarySpawn =  Game.spawns[Object.keys(Game.spawns)[0]];
   if (existingRoles.length >= count) {
     return;
   }
 
   if (role === 'claimer') {
-    Game.spawns.Hearth.createCreep([CLAIM, MOVE], '', {role: role});
+    primarySpawn.createCreep([CLAIM, MOVE], '', {role: role});
     return;
   }
 
-  if (Game.spawns.Hearth.canCreateCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE]) === OK) {
-    Game.spawns.Hearth.createCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE], '', {role: role});
+
+
+  if (primarySpawn.canCreateCreep([WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE]) === OK) {
+    primarySpawn.createCreep([WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], '', {role: role});
     return;
   }
 
-  Game.spawns.Hearth.createCreep([WORK, CARRY, MOVE], '', {role: role});
+  primarySpawn.createCreep([WORK,WORK,WORK, CARRY, CARRY, MOVE,MOVE], '', {role: role});
 }
 
 exports.loop = function () {
   // spawn('claimer', 1);
-  spawn('builder', 2);
-  spawn('upgrader', 3);
-  spawn('harvester', 3);
+  spawn('builder', 7);
+  spawn('upgrader', 8);
+  spawn('harvester', 7);
 
-  var tower = Game.getObjectById('TOWER_ID');
-  if (tower) {
-    var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-        filter: (structure) => structure.hits < structure.hitsMax
-  })
-    ;
-    if (closestDamagedStructure) {
-      tower.repair(closestDamagedStructure);
-    }
+  stats.status();
+  structureKeeper.run();
 
-    var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-    if (closestHostile) {
-      tower.attack(closestHostile);
-    }
-  }
 
   for (var name in Game.creeps) {
     var creep = Game.creeps[name];
+    if ( creepKeeper.recycle(creep) ) {
+      continue;
+    }
+
+
     if (creep.memory.role === 'harvester') {
       roleHarvester.run(creep);
     }
@@ -54,5 +54,6 @@ exports.loop = function () {
     if (creep.memory.role === 'builder') {
       roleBuilder.run(creep);
     }
+
   }
 };
