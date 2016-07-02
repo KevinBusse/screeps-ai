@@ -1,6 +1,4 @@
-var roleHarvester = require('role.harvester')
-var roleUpgrader = require('role.upgrader')
-var roleBuilder = require('role.builder')
+var roles = require('roles')
 
 function spawner (role, count) {
   var existingRoles = _.filter(Game.creeps, (creep) => creep.memory.role === role)
@@ -10,23 +8,20 @@ function spawner (role, count) {
 
   var spawn = Game.spawns.Hearth
 
-  if (role === 'claimer') {
-    spawn.createCreep([CLAIM, MOVE], '', {role: role})
-    return
+  var basicBody = [WORK, CARRY, MOVE]
+  var body = []
+
+  while (spawn.canCreateCreep(body.concat(basicBody))) {
+    body = body.concat(basicBody)
   }
 
-  if (spawn.canCreateCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE]) === OK) {
-    spawn.createCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE], '', {role: role})
-    return
-  }
-
-  spawn.createCreep([WORK, CARRY, MOVE], '', {role: role})
+  spawn.createCreep(body, '', {role: role})
 }
 
 exports.loop = function () {
   // spawn('claimer', 1)
   spawner('builder', 2)
-  spawner('upgrader', 3)
+  spawner('upgrader', 4)
   spawner('harvester', 2)
 
   // TODO: extract tower logic
@@ -45,15 +40,5 @@ exports.loop = function () {
   //   }
   // }
 
-  _.each(Game.creeps, (creep) => {
-    if (creep.memory.role === 'harvester') {
-      roleHarvester.run(creep)
-    }
-    if (creep.memory.role === 'upgrader') {
-      roleUpgrader.run(creep)
-    }
-    if (creep.memory.role === 'builder') {
-      roleBuilder.run(creep)
-    }
-  })
+  _.each(Game.creeps, (creep) => roles[creep.memory.role](creep))
 }
