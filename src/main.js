@@ -8,7 +8,7 @@ var stats = require('roomStats');
 
 function spawn(role, count) {
   var existingRoles = _.filter(Game.creeps, (creep) => creep.memory.role === role);
-  var primarySpawn =  Game.spawns[Object.keys(Game.spawns)[0]];
+  var primarySpawn = Game.spawns[Object.keys(Game.spawns)[0]];
   if (existingRoles.length >= count) {
     return;
   }
@@ -19,13 +19,12 @@ function spawn(role, count) {
   }
 
 
-
   if (primarySpawn.canCreateCreep([WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE]) === OK) {
     primarySpawn.createCreep([WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], '', {role: role});
     return;
   }
 
-  primarySpawn.createCreep([WORK,WORK,WORK, CARRY, CARRY, MOVE,MOVE], '', {role: role});
+  primarySpawn.createCreep([WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], '', {role: role});
 }
 
 exports.loop = function () {
@@ -36,11 +35,11 @@ exports.loop = function () {
 
   stats.status();
   structureKeeper.run();
-
+  //console.log(JSON.stringify(creepKeeper.findSource(['576a9bad57110ab231d87b8e'])));
 
   for (var name in Game.creeps) {
     var creep = Game.creeps[name];
-    if ( creepKeeper.recycle(creep) ) {
+    if (creepKeeper.recycle(creep)) {
       continue;
     }
 
