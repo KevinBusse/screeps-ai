@@ -1,41 +1,70 @@
 var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
+var roleClaimer = require('role.claimer');
+
+var roleDigger = require('role.digger');
+var roleCarrier = require('role.carrier');
+var roleSoldier = require('role.soldier');
+var roleArtillery = require('role.artillery');
 
 var creepKeeper = require('creepKeeper');
 var structureKeeper = require('structureKeeper');
 var stats = require('roomStats');
 
 function spawn(role, count) {
+
   var existingRoles = _.filter(Game.creeps, (creep) => creep.memory.role === role);
   var primarySpawn = Game.spawns[Object.keys(Game.spawns)[0]];
   if (existingRoles.length >= count) {
-    return;
-  }
 
-  if (role === 'claimer') {
-    primarySpawn.createCreep([CLAIM, MOVE], '', {role: role});
     return;
   }
 
 
-  if (primarySpawn.canCreateCreep([WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE]) === OK) {
-    primarySpawn.createCreep([WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], '', {role: role});
-    return;
-  }
+  switch (role) {
+    case 'digger':
+      roleDigger.spawn(count);
+      break;
+    case 'carrier':
+      roleCarrier.spawn(count);
+      break;
+    case 'soldier':
+      roleSoldier.spawn(count);
+      break;
+    case 'artillery':
+      roleArtillery.spawn(count);
 
-  primarySpawn.createCreep([WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], '', {role: role});
+      break;
+    case 'claimer':
+      primarySpawn.createCreep([CLAIM, MOVE, MOVE, MOVE, TOUGH], '', {role: role});
+      break;
+
+    default:
+      if (primarySpawn.canCreateCreep([WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE]) === OK) {
+        primarySpawn.createCreep([WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], '', {role: role});
+        return;
+      }
+
+      primarySpawn.createCreep([WORK, WORK, CARRY, MOVE], '', {role: role});
+
+  }
 }
 
 exports.loop = function () {
-  // spawn('claimer', 1);
-  spawn('builder', 7);
-  spawn('upgrader', 8);
-  spawn('harvester', 7);
+  spawn('digger', 4);
+  spawn('carrier', 4);
+
+  if (Game.gcl.level > 1) {
+    spawn('claimer', 1);
+  }
+  spawn('builder', 1);
+  spawn('upgrader', 5);
+  spawn('harvester', 2);
 
   stats.status();
   structureKeeper.run();
-  //console.log(JSON.stringify(creepKeeper.findSource(['576a9bad57110ab231d87b8e'])));
+
 
   for (var name in Game.creeps) {
     var creep = Game.creeps[name];
@@ -52,6 +81,21 @@ exports.loop = function () {
     }
     if (creep.memory.role === 'builder') {
       roleBuilder.run(creep);
+    }
+    if (creep.memory.role === 'claimer') {
+      roleClaimer.run(creep);
+    }
+    if (creep.memory.role === 'digger') {
+      roleDigger.run(creep);
+    }
+    if (creep.memory.role === 'carrier') {
+      roleCarrier.run(creep);
+    }
+    if (creep.memory.role === 'soldier') {
+      roleSoldier.run(creep);
+    }
+    if (creep.memory.role === 'artillery') {
+      roleArtillery.run(creep);
     }
 
   }
