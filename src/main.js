@@ -1,7 +1,7 @@
 var rooms = require('rooms')
-var roles = require('roles')
+var creeps = require('creeps')
 
 exports.loop = () => {
   rooms()
-  roles()
+  creeps()
 }
