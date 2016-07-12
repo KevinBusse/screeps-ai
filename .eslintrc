@@ -6,6 +6,9 @@
     "no-console": 0
   },
   "globals": {
+    "SUCCESS": true,
+    "FAILURE": true,
+    "RUNNING": true,
     "_": true,
     "Game": true,
     "Memory": true,
