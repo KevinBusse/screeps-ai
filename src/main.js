@@ -2,19 +2,24 @@ global.SUCCESS = 'SUCCESS'
 global.FAILURE = 'FAILURE'
 global.RUNNING = 'RUNNING'
 
-require('creep.actions')
-require('room.actions')
-
-const tick = (tree, room, memory) => {
+const tick = (tree, actor, memory) => {
   memory.trees = memory.trees || {}
-  memory.trees[tree.id] = memory.trees[tree.id] || {}
+  memory.trees[tree.id] = memory.trees[tree.id] || {isOpen: {}, nodes: {}}
 
-  var context = {actor: room, memory: memory, tree: tree}
-  tree.root.execute(context)
+  Memory.trees = Memory.trees || {}
+  Memory.trees[tree.id] = Memory.trees[tree.id] || {nodes: {}}
+
+  tree.root.execute({
+    actor: actor,
+    memory: memory,
+    treeMemory: memory.trees[tree.id],
+    globalTreeMemory: Memory.trees[tree.id],
+    tree: tree
+  })
 }
 
 exports.loop = () => {
-  console.log(Game.time)
+  console.log(`Tick #${Game.time}`)
 
   Memory.rooms = Memory.rooms || {}
   _.each(Game.rooms, room => {
@@ -23,7 +28,7 @@ exports.loop = () => {
       var tree = require(`room.behavior.${memory.behavior}`)
       tick(tree, room, memory)
     } catch (err) {
-      console.log(err)
+      Game.notify(err)
     }
   })
 
@@ -36,7 +41,7 @@ exports.loop = () => {
       var tree = require(`creep.behavior.${memory.behavior}`)
       tick(tree, creep, memory)
     } catch (err) {
-      console.log(err)
+      Game.notify(err)
     }
   })
 }
