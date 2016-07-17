@@ -1,3 +1,5 @@
+const filterHostile = require('filter.hostile')
+
 global.SUCCESS = 'SUCCESS'
 global.FAILURE = 'FAILURE'
 global.RUNNING = 'RUNNING'
@@ -23,6 +25,25 @@ exports.loop = () => {
 
   Memory.rooms = Memory.rooms || {}
   _.each(Game.rooms, room => {
+    // primitive defense
+    _.each(
+      room.find(
+        FIND_MY_STRUCTURES,
+        {filter: structure => structure.structureType === STRUCTURE_TOWER}
+      ),
+      tower => {
+        var creep = tower.pos.findClosestByRange(
+          FIND_HOSTILE_CREEPS,
+          {filter: filterHostile}
+        )
+        if (!creep) {
+          return
+        }
+        Game.notify(`Invaded by ${creep.owner.username} ${creep.body.join('\n')}`)
+        tower.attack(creep)
+      }
+    )
+
     var memory = Memory.rooms[room.name] = Memory.rooms[room.name] || {behavior: 'basic'}
     try {
       var tree = require(`room.behavior.${memory.behavior}`)
