@@ -54,7 +54,8 @@ for swampy rooms.
 * ☐ Scale Harvesters up to 6 WORK
 * ☐ Add Harvester dieing detection to create new harvester before the old one dies
 * ☐ Spawn Carrier
-* ☐ Auto-Build Tower
+* ☑ Auto-Build Towers
+* ☑ Auto-Build Storage
 * ☐ Auto-Build Roads
 * ☐ Spawn Long Range Harvester
 * ☐ Spawn Long Carrier

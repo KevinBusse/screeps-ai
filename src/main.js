@@ -20,11 +20,20 @@ const tick = (tree, actor, memory) => {
   })
 }
 
+const log = function (...args) {
+  if (Memory.debug !== true) {
+    return
+  }
+
+  console.log('<span style="color: deepskyblue">', ...args, '</span>')
+}
+
 exports.loop = () => {
-  console.log(`Tick #${Game.time}`)
+  log(`Tick #${Game.time} | GCL: ${Game.gcl.level} | Next Level: ${Math.floor(Game.gcl.progress / Game.gcl.progressTotal * 100)}% }`)
 
   Memory.rooms = Memory.rooms || {}
   _.each(Game.rooms, room => {
+    log(`${room} RCL: ${room.controller.level} | Next Level: ${Math.floor(room.controller.progress / room.controller.progressTotal * 100)}%`)
     // primitive defense
     _.each(
       room.find(
@@ -36,11 +45,26 @@ exports.loop = () => {
           FIND_HOSTILE_CREEPS,
           {filter: filterHostile}
         )
-        if (!creep) {
+        if (creep) {
+          Game.notify(`Invaded by ${creep.owner.username} ${creep.body.join('\n')}`)
+          tower.attack(creep)
           return
         }
-        Game.notify(`Invaded by ${creep.owner.username} ${creep.body.join('\n')}`)
-        tower.attack(creep)
+
+        if (Game.time % 100 <= 10 && tower.energy > tower.energyCapacity * 0.9) {
+          var defensive = tower.room.find(FIND_STRUCTURES, {
+            filter: structure => structure.structureType === STRUCTURE_WALL ||
+            structure.structureType === STRUCTURE_RAMPART
+          })
+
+          if (defensive.length === 0) {
+            return
+          }
+
+          defensive.sort((a, b) => b.hits - a.hits)
+
+          tower.repair(defensive[0])
+        }
       }
     )
 
@@ -63,6 +87,13 @@ exports.loop = () => {
       tick(tree, creep, memory)
     } catch (err) {
       Game.notify(err)
+    }
+  })
+
+  // Cleanup memory
+  Object.keys(Memory.creeps).forEach((creep) => {
+    if (Memory.creeps.hasOwnProperty(creep) && typeof Game.creeps[creep] === 'undefined') {
+      delete Memory.creeps[creep]
     }
   })
 }
