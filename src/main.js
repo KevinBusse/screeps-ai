@@ -33,7 +33,11 @@ exports.loop = () => {
 
   Memory.rooms = Memory.rooms || {}
   _.each(Game.rooms, room => {
+    room.memory.lastVisible = Game.time
+
     log(`${room} RCL: ${room.controller.level} | Next Level: ${Math.floor(room.controller.progress / room.controller.progressTotal * 100)}%`)
+    _.each(Game.rooms.sim.find(FIND_DROPPED_ENERGY), dropSite => log(`${room} DropSite: ${dropSite.id} Energy: ${dropSite.energy}`))
+
     // primitive defense
     _.each(
       room.find(
@@ -68,27 +72,49 @@ exports.loop = () => {
       }
     )
 
-    var memory = Memory.rooms[room.name] = Memory.rooms[room.name] || {behavior: 'basic'}
+    var memory = room.memory
+    memory.behavior = memory.behavior || 'basic'
     try {
       var tree = require(`room.behavior.${memory.behavior}`)
       tick(tree, room, memory)
     } catch (err) {
+      console.log(err)
       Game.notify(err)
     }
   })
 
+  const behaviors = {}
+  const skipCreepBehaviors = [
+    // 'harvester',
+    // 'worker',
+    // 'carrier',
+    ''
+  ]
+
   _.each(Game.creeps, creep => {
     var memory = creep.memory
+
     if (!memory.behavior) {
+      memory.behavior = 'debug'
+    }
+
+    if (skipCreepBehaviors.indexOf(memory.behavior) !== -1) {
       return
     }
+
+    behaviors[memory.behavior] = behaviors[memory.behavior] || 0
+    behaviors[memory.behavior]++
+
     try {
       var tree = require(`creep.behavior.${memory.behavior}`)
       tick(tree, creep, memory)
     } catch (err) {
+      console.log(err)
       Game.notify(err)
     }
   })
+
+  _.each(behaviors, (count, behavior) => log(`${count} ${behavior}s`))
 
   // Cleanup memory
   Object.keys(Memory.creeps).forEach((creep) => {
