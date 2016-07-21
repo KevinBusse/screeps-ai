@@ -55,6 +55,11 @@ exports.loop = () => {
           return
         }
 
+        var damagedCreeps = tower.room.find(FIND_MY_CREEPS, {filter: creep => creep.hits < creep.hitsMax})
+        if (damagedCreeps.length > 0) {
+          tower.heal(_.sample(damagedCreeps))
+        }
+
         if (Game.time % 100 <= 10 && tower.energy > tower.energyCapacity * 0.9) {
           var defensive = tower.room.find(FIND_STRUCTURES, {
             filter: structure => structure.structureType === STRUCTURE_WALL ||
