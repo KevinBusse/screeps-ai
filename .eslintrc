@@ -8,6 +8,8 @@
   "globals": {
     "_": true,
     "Game": true,
+    "Memory": true,
+    "Room": true,
     "TOP": true,
     "TOP_RIGHT": true,
     "RIGHT": true,
