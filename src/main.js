@@ -130,11 +130,11 @@ exports.loop = () => {
         }
 
         if (job.flag && !Game.flags[job.flag]) {
-          console.log(`#${id} flag is missing for ${job.type}ing`)
+          console.log(`${room.name} #${id} flag is missing for ${job.type}ing`)
           return
         }
 
-        console.log(`#${id} will spawn ${job.type}er next`)
+        console.log(`${room.name} #${id} will spawn ${job.type}er next`)
         const body = jobs[job.type].getCreepBody(room, job)
         // console.log(body)
         const spawn = Game.spawns[room.name + 'Spawn1']
